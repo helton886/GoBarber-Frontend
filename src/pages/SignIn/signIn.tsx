@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
 import logoImg from '../../assets/logo.svg';
 
+import { useAuth } from '../../hooks/Auth';
+import { useToast } from '../../hooks/Toast';
 import getValidationErrors from '../../utils/getValidationErros';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
@@ -14,21 +16,42 @@ import { Container, Content, Background } from './styles';
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  console.log(formRef);
+  const { signIn } = useAuth();
+  const { addToast } = useToast();
 
-  const handleSubmit = useCallback(async (data: Object) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        email: Yup.string().required('E-mail obrigatório').email(),
-        password: Yup.string().required('Senha obrigatória'),
-      });
-      await schema.validate(data, { abortEarly: false });
-    } catch (error) {
-      const errors = getValidationErrors(error);
-      formRef.current?.setErrors(errors);
-    }
-  }, []);
+  interface SignInFormData {
+    email: string;
+    password: string;
+  }
+
+  const handleSubmit = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          email: Yup.string().required('E-mail obrigatório').email(),
+          password: Yup.string().required('Senha obrigatória'),
+        });
+        await schema.validate(data, { abortEarly: false });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors);
+        }
+        addToast({
+          type: 'error',
+          title: 'Erro na autenticação',
+          description:
+            'Ocorreu um erro ao realizar login, cheque as credencias.',
+        });
+      }
+    },
+    [signIn, addToast],
+  );
 
   return (
     <Container>
