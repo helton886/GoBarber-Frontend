@@ -27,33 +27,36 @@ const SignUp: React.FC = () => {
   const { addToast } = useToast();
   const history = useHistory();
 
-  const handleSubmit = useCallback(async (data: SignUpFormDate) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string().required('E-mail obrigatório').email(),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-      });
-      await schema.validate(data, { abortEarly: false });
+  const handleSubmit = useCallback(
+    async (data: SignUpFormDate) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string().required('E-mail obrigatório').email(),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+        });
+        await schema.validate(data, { abortEarly: false });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      addToast({ title: 'Cadastro realizado"', type: 'success' });
-      history.push('/');
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors);
-        return;
+        addToast({ title: 'Cadastro realizado"', type: 'success' });
+        history.push('/');
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        addToast({
+          type: 'error',
+          title: 'Erro na criação da conta!',
+          description: 'Ocorreu um erro ao criar a conta, verifique os campos.',
+        });
       }
-      addToast({
-        type: 'error',
-        title: 'Erro na criação da conta!',
-        description: 'Ocorreu um erro ao criar a conta, verifique os campos.',
-      });
-    }
-  }, []);
+    },
+    [history, addToast],
+  );
 
   return (
     <Container>

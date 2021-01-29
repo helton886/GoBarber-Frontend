@@ -1,5 +1,4 @@
 import React, { ButtonHTMLAttributes } from 'react';
-import { bool } from 'yup';
 
 import { Container } from './styles';
 

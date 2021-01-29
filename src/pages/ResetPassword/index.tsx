@@ -67,7 +67,7 @@ const SignIn: React.FC = () => {
         });
       }
     },
-    [addToast, useHistory, location.search],
+    [addToast, location.search, history],
   );
 
   return (
