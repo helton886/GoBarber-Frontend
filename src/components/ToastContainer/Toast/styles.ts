@@ -30,8 +30,6 @@ export const Container = styled(animated.div)<ContainerProps>`
   border-radius: 10px;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
-  background: #ebf8ff;
-  color: #3172b7;
 
   & + div {
     margin-top: 8px;
@@ -54,14 +52,14 @@ export const Container = styled(animated.div)<ContainerProps>`
   button {
     position: absolute;
     right: 16px;
-    top: 20px;
+    top: 19px;
     opacity: 0.6;
     border: 0;
     background: transparent;
     color: inherit;
   }
   ${props =>
-    props.hasDescription &&
+    !props.hasDescription &&
     css`
       align-items: center;
       svg {
